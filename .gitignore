@@ -1,0 +1,9 @@
+.idea
+venv.tar.gz
+venv/*
+target/*
+spark-warehouse/*
+project/*
+mlModel/*
+src/main/resources/metastore_db/*
+src/main/resources/derby.log
