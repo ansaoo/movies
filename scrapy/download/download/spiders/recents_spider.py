@@ -1,18 +1,61 @@
 
 import scrapy
+import re
+import sqlite3
 
 
 class RecentSpider(scrapy.Spider):
         name = "recents"
 
 #        start_urls = ["https://www.themoviedb.org/movie/upcoming/"]
-        start_urls = ['http://www.allocine.fr/film/sorties-semaine/']
+#         start_urls = ['http://www.allocine.fr/film/sorties-semaine/']
+#         start_urls = ['http://www.allocine.fr/film/agenda/sem-2017-10-11/',
+#                       'http://www.allocine.fr/film/agenda/sem-2017-11-01/'
+#                       ]
+
+        def start_requests(self):
+            urls = [
+                'http://www.allocine.fr/film/agenda/sem-2017-08-16/',
+                'http://www.allocine.fr/film/agenda/sem-2017-08-23/',
+                'http://www.allocine.fr/film/agenda/sem-2017-08-30/',
+                'http://www.allocine.fr/film/agenda/sem-2017-09-06/',
+                'http://www.allocine.fr/film/agenda/sem-2017-09-13/',
+                'http://www.allocine.fr/film/agenda/sem-2017-09-20/',
+                'http://www.allocine.fr/film/agenda/sem-2017-09-27/',
+                'http://www.allocine.fr/film/agenda/sem-2017-10-04/',
+                'http://www.allocine.fr/film/agenda/sem-2017-10-11/',
+                'http://www.allocine.fr/film/agenda/sem-2017-10-18/',
+                'http://www.allocine.fr/film/agenda/sem-2017-10-25/',
+                'http://www.allocine.fr/film/agenda/sem-2017-11-01/',
+                'http://www.allocine.fr/film/agenda/sem-2017-11-08/',
+                'http://www.allocine.fr/film/agenda/sem-2017-11-15/'
+                ]
+            for url in urls:
+                yield scrapy.Request(url=url, callback=self.parse)
         
         def parse(self, response):
-            for quote in response.css('div.card.card-entity.card-entity-list.cf.hred'):
-                yield { 
-                        'titre': quote.css('.meta-title a::text').extract_first(),
-                        'genre': quote.css('div.meta-body-item.meta-body-info span::text').extract(),
-                        'trailer': quote.css('div.meta-more a::attr(href)').extract_first(),
-                        'synopsis': quote.css('div.synopsis::text').extract_first()
+            regex = '(.*)cfilm=(?P<cfilm>[0-9]*).html'
+            for quote in response.css('div.card.card-entity.card-entity-list.cf'):
+                res = re.match(regex, quote.css('h2.meta-title a::attr(href)').extract_first())
+                yield {
+                        'titre': quote.css('h2.meta-title a::text').extract_first(),
+                        'date': quote.css('div.meta-body-item.meta-body-info span::text').extract_first(),
+                        'genre': quote.css('div.meta-body-item.meta-body-info span::text').extract()[3:],
+                        'dirs': quote.css('div.meta-body-item.meta-body-direction.light span::text').extract(),
+                        'actors': quote.css('div.meta-body-item.meta-body-actor.light span::text').extract(),
+                        'cfilm': res.groupdict()['cfilm'] if res else '',
+                        'rate': quote.css('span.stareval-note::text').extract(),
+                        'synopsis': quote.css('div.synopsis::text').extract_first().strip()
                         }
+            for href in response.css('h2.meta-title a::attr(href)'):
+                yield response.follow(href, callback=self.parse_trailer)
+
+        def parse_trailer(self, response):
+            regex = '(.*)cmedia=(?P<cmedia>[0-9]*)&cfilm=(?P<cfilm>[0-9]*).html'
+            for href in response.css('a::attr(href)').extract():
+                res = re.match(regex, href)
+                if href.startswith('/video/player'):
+                    yield {
+                        'cmedia': res.groupdict()['cmedia'] if res else '',
+                        'cfilm': res.groupdict()['cfilm'] if res else ''
+                    }
