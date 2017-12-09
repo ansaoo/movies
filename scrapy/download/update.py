@@ -1,24 +1,10 @@
 #! /usr/bin/env python3
 
 
-def group(data):
-    return {'cfilm': cfilm,
-            'cmedia': [media for media in data if cfilm in data]}
-
-
-def merge(json_file):
-    data = json.load(open(json_file))
-    cfilms = []
-    return [0]
-
-
-def update(json_file):
+def update(liste):
     conn = sqlite3.connect("new_movies.db")
     c = conn.cursor()
-    df = pd.read_json(json_file, orient='records')
-    df.groupby('cfilm')['cmedia'].apply(lambda x: ';'.join(x))
-    news = merge(json_file)
-    for val in news:
+    for val in liste:
         c.execute("UPDATE movies SET cmedia=:cmedia WHERE cfilm=:cfilm", val)
     conn.commit()
     conn.close()
@@ -26,7 +12,12 @@ def update(json_file):
 
 if __name__ == "__main__":
     import sys
-    import json
     import sqlite3
     import pandas as pd
-    update(sys.argv[1])
+    df = pd.read_json(sys.argv[1], orient='records')
+    temp = df.groupby('cfilm')['cmedia'].apply(lambda x: ';'.join([str(el) for el in x]))
+    new = pd.DataFrame()
+    new['cfilm'] = temp.index
+    new['cmedia'] = temp.values
+    new = new.to_dict(orient='records')
+    update(new)
