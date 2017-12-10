@@ -16,8 +16,8 @@ def sort(val):
             parse_date(val['date'], to_str=True),
             ';'.join(val['genre']),
             val['synopsis'],
-            ';'.join(val['dir']),
-            ';'.join(val['actor']),
+            ';'.join(val['dirs']),
+            ';'.join(val['actors']),
             val['cfilm'],
             avg(val['rate']),
             0.0

@@ -15,20 +15,9 @@ class RecentSpider(scrapy.Spider):
 
         def start_requests(self):
             urls = [
-                'http://www.allocine.fr/film/agenda/sem-2017-08-16/',
-                'http://www.allocine.fr/film/agenda/sem-2017-08-23/',
-                'http://www.allocine.fr/film/agenda/sem-2017-08-30/',
-                'http://www.allocine.fr/film/agenda/sem-2017-09-06/',
-                'http://www.allocine.fr/film/agenda/sem-2017-09-13/',
-                'http://www.allocine.fr/film/agenda/sem-2017-09-20/',
-                'http://www.allocine.fr/film/agenda/sem-2017-09-27/',
-                'http://www.allocine.fr/film/agenda/sem-2017-10-04/',
-                'http://www.allocine.fr/film/agenda/sem-2017-10-11/',
-                'http://www.allocine.fr/film/agenda/sem-2017-10-18/',
-                'http://www.allocine.fr/film/agenda/sem-2017-10-25/',
-                'http://www.allocine.fr/film/agenda/sem-2017-11-01/',
-                'http://www.allocine.fr/film/agenda/sem-2017-11-08/',
-                'http://www.allocine.fr/film/agenda/sem-2017-11-15/'
+                'http://www.allocine.fr/film/agenda/sem-2017-11-22/',
+                'http://www.allocine.fr/film/agenda/sem-2017-11-29/',
+                'http://www.allocine.fr/film/agenda/sem-2017-12-07/'
                 ]
             for url in urls:
                 yield scrapy.Request(url=url, callback=self.parse)
