@@ -13,7 +13,7 @@ L'analyse s'entraine sur une base de données de films dont l'utilisateur a attr
 # Utilisation
 >  Présence possible de bug => encore en dev.
 1.  Édition de la DB sqlite dans `src/main/resources/MyVideos107.db`. 
-    Il s'agit de la DB utilisée par [https://kodi.tv/](Kodi).
+    Il s'agit de la DB utilisée par [Kodi](https://kodi.tv/).
 2.  Lancement.
     ```bash
     ./run.sh
